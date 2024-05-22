@@ -1,9 +1,11 @@
 //imports
-import { user_login, logged_in, check, create_movie, display_movies } from './global_functions.js';
+import {user_login, logged_in, check, create_movie, display_movies, get_local_storage, display_single_movie} from './global_functions.js';
 
 //elements from HTML
 const logged = document.getElementById(`logged_in`);
 const movie_list = document.getElementById(`movie_list`);
+const movie_cover = document.getElementById(`movie_cover`);
+const movie_seats = document.getElementById(`movie_seats`);
 //inputs
 const movie_title = document.getElementById(`movieTitle`);
 const movie_image = document.getElementById(`movieImage`);
@@ -56,4 +58,6 @@ if(logged){
         movie_list.appendChild(movie)
     }
 }
-
+if(movie_cover){
+  display_single_movie(movie_cover, movie_seats)
+}

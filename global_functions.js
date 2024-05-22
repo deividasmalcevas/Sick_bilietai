@@ -68,16 +68,22 @@ function valid_img(url) {
 }
 export function create_movie(title, img, seats) {
     let movies = get_local_storage('movies') || [];
-
-    movies.push({ title: title, img: img, seats: seats });
-
+    let all_seats = [];
+    for (let i = 1; i <= seats; i++) {
+        all_seats.push({
+            seat_nr: i,
+            reserved: false
+        });
+    }
+    movies.push({ title: title, img: img, all_seats});
     create_local_storage('movies', movies);
-
     window.location.href = 'movie_list.html';
 }
 export function display_movies(div){
+
     let movies = get_local_storage('movies') || [];
-    movies.forEach((mov) =>{
+    movies.forEach((mov, index) =>{
+        let del = false
         const movie = document.createElement('div');
         movie.classList.add('movie');
 
@@ -85,21 +91,58 @@ export function display_movies(div){
         movie_img.classList.add('movie_img');
         movie_img.style.backgroundImage = `url("${mov.img}")`
         const movie_info = document.createElement('div');
-        movie_info.innerHTML = `<h5>${mov.title}</h5><h6>Available seats: ${mov.seats}</h6>`
+        let avi_seats = mov.all_seats.filter(seat => !seat.reserved);
+        movie_info.innerHTML = `<div class="movie_title">${mov.title}</div>
+        <h6>Available seats: ${avi_seats.length} / ${mov.all_seats.length}</h6>`
         movie.onclick = () => {
-
+            if(del === false){
+                create_local_storage(`selected_movie`, mov)
+                window.location.href = 'single_movie.html';
+            }
         }
         movie.appendChild(movie_img)
         movie.appendChild(movie_info)
         if(logged_in() === `admin`){
             const btn_del = document.createElement('button');
             btn_del.classList.add('btn', `btn-danger`);
-            btn_del.textContent = `remove movie`
+            btn_del.textContent = `Remove Movie`
             btn_del.onclick = () => {
-
+                movies = movies.filter((_, i) => i !== index);
+                create_local_storage('movies', movies);
+                div.removeChild(movie);
+                del = true
             }
             movie.appendChild(btn_del)
         }
         div.appendChild(movie)
     });
+}
+export function display_single_movie(movie_cover, movie_seats){
+    let sel_movie = get_local_storage(`selected_movie`)
+    if(sel_movie){
+        const movie_img = document.createElement('div');
+        movie_img.classList.add('movie_cover');
+        movie_img.style.backgroundImage = `url("${sel_movie.img}")`
+        movie_cover.appendChild(movie_img)
+        const movie_title = document.createElement('div');
+        movie_title.classList.add('movie_title');
+        movie_title.textContent = `${sel_movie.title}`
+        movie_seats.appendChild(movie_title)
+        const movie_all_seats = document.createElement('div');
+        movie_all_seats.classList.add('movie_all_seats');
+        sel_movie.all_seats.forEach((mov) => {
+            const movie_seat = document.createElement('div');
+            movie_seat.classList.add('movie_seat');
+            movie_seat.textContent = `${mov.seat_nr}`
+            if(mov.reserved) movie_seat.style.backgroundColor = `red`
+            movie_seat.onclick = () => {
+                if(!mov.reserved){
+                    movie_seat.style.backgroundColor = `green`
+                }
+            }
+            movie_all_seats.appendChild(movie_seat);
+        });
+        movie_seats.appendChild(movie_all_seats)
+
+    }
 }

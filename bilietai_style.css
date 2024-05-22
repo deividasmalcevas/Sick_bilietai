@@ -50,6 +50,9 @@ body{
     flex-wrap: wrap;
 }
 .movie{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     padding: 10px;
     border: solid white 1px;
     border-radius: 1rem;
@@ -64,9 +67,23 @@ body{
 .movie_img{
     background: url("https://agentestudio.com/uploads/post/image/69/main_how_to_design_404_page.png") center;
     background-size: cover;
+    border-radius: 2rem;
+    border: solid white 1px;
     margin-bottom: 10px;
     width: 100%;
     height: 200px;
+}
+.movie_title{
+    overflow: hidden;
+    height: 75px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 700;
+}
+.movie_title:hover{
+    overflow: scroll;
 }
 .add_movie_wrapper{
     padding: 20px;
@@ -75,4 +92,55 @@ body{
     display: flex;
     flex-direction: column;
     gap: 15px;
+}
+.single_movie_wrapper{
+    margin-top: 20px;
+    padding: 20px;
+    border: solid white 1px;
+    border-radius: 2rem;
+    display: flex;
+}
+.movie_cover_wrapper{
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 100px;
+    padding: 20px;
+}
+.movie_cover{
+    border-radius: 2rem;
+    height: 500px;
+    background-size: cover;
+    background-position: center;
+    border: solid white 1px;
+}
+.movie_seats_wrapper{
+    flex-grow: 1.5;
+    flex-basis: 0;
+    min-width: 100px;
+    padding: 20px;
+}
+.movie_all_seats{
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    border-radius: 2rem;
+    border: solid white 1px;
+}
+.movie_seat{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    width: 50px;
+    height: 50px;
+    border-radius: 1rem;
+    border: solid white 1px;
+    transition: background-color 0.3s ease-in-out;
+    cursor: pointer;
+}
+.movie_seat:hover{
+    background-color: rgba(255, 255, 255, 0.17);
 }
