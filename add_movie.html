@@ -21,7 +21,13 @@
 
 <body class="bg-dark">
     <div class="container">
-       <h2>Logged in as: <span id="logged_in">none</span></h2>
+       <div class="add_movie_wrapper">
+           <h1>Create Movie</h1>
+           <label for="movieTitle">Title</label><input class="form-control" type="text" id="movieTitle" placeholder="Movie Title">
+           <label for="movieImage">Image</label><input class="form-control" type="url" id="movieImage" placeholder="Movie Image URL">
+           <label for="seatsTotal">Seats</label><input class="form-control" type="number" id="seatsTotal" min="1" placeholder="Total Seats">
+           <button id="btn_create_movie" class="btn btn-light">Create Movie</button>
+       </div>
     </div>
 </body>
 </html>

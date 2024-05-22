@@ -32,3 +32,47 @@ body{
 .login:hover{
     background-color: rgba(255, 255, 255, 0.17);
 }
+.logged{
+    border: solid white 1px;
+    padding: 10px;
+    font-size: 16px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 10px;
+}
+.movie_list{
+    padding: 20px;
+    border: solid white 1px;
+    border-radius: 0 0 2rem 2rem;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.movie{
+    padding: 10px;
+    border: solid white 1px;
+    border-radius: 1rem;
+    width: 200px;
+    user-select: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+.movie:hover{
+    background-color: rgba(255, 255, 255, 0.17);
+}
+.movie_img{
+    background: url("https://agentestudio.com/uploads/post/image/69/main_how_to_design_404_page.png") center;
+    background-size: cover;
+    margin-bottom: 10px;
+    width: 100%;
+    height: 200px;
+}
+.add_movie_wrapper{
+    padding: 20px;
+    border: solid white 1px;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
