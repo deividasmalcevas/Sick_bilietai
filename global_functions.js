@@ -80,7 +80,6 @@ export function create_movie(title, img, seats) {
     window.location.href = 'movie_list.html';
 }
 export function display_movies(div){
-
     let movies = get_local_storage('movies') || [];
     movies.forEach((mov, index) =>{
         let del = false
@@ -124,10 +123,12 @@ export function display_single_movie(movie_cover, movie_seats){
         movie_img.classList.add('movie_cover');
         movie_img.style.backgroundImage = `url("${sel_movie.img}")`
         movie_cover.appendChild(movie_img)
+
         const movie_title = document.createElement('div');
         movie_title.classList.add('movie_title');
         movie_title.textContent = `${sel_movie.title}`
         movie_seats.appendChild(movie_title)
+
         const movie_all_seats = document.createElement('div');
         movie_all_seats.classList.add('movie_all_seats');
         sel_movie.all_seats.forEach((mov) => {
@@ -144,5 +145,16 @@ export function display_single_movie(movie_cover, movie_seats){
         });
         movie_seats.appendChild(movie_all_seats)
 
+        const reserve = document.createElement('button');
+        reserve.classList.add('btn', `btn-success`, `m-4`);
+        reserve.textContent = `Reserve`
+        movie_seats.appendChild(reserve)
+
+        if(logged_in() === `admin`){
+            const un_reserve = document.createElement('button');
+            un_reserve.classList.add('btn', `btn-danger`, `m-4`);
+            un_reserve.textContent = `Cancel Reservations`
+            movie_seats.appendChild(un_reserve)
+        }
     }
 }
