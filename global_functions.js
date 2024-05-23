@@ -1,11 +1,8 @@
-export function create_local_storage(name, content){
+function create_local_storage(name, content){
     localStorage.setItem(name, JSON.stringify(content))
 }
-export function get_local_storage(name){
+function get_local_storage(name){
     return JSON.parse(localStorage.getItem(name))
-}
-export function del_local_storage(name){
-    localStorage.removeItem(name)
 }
 export function user_login(user){
     if(user === `user`){
@@ -27,6 +24,21 @@ export function user_login(user){
     else{
         console.log(`here`)
         create_local_storage(`logged`, `admin`)
+    }
+}
+export function admin_add(movie_list,logged){
+    let logged_user = logged_in()
+    logged.textContent = logged_user
+    display_movies(movie_list)
+    if(logged_user === `admin`){
+        const movie = document.createElement('div');
+        movie.classList.add('movie');
+        movie.style.textAlign = `center`
+        movie.textContent = `ADD new movie`;
+        movie.onclick = () => {
+            window.location.href = 'add_movie.html';
+        }
+        movie_list.appendChild(movie)
     }
 }
 export function logged_in(){
@@ -72,7 +84,8 @@ export function create_movie(title, img, seats) {
     for (let i = 1; i <= seats; i++) {
         all_seats.push({
             seat_nr: i,
-            reserved: false
+            reserved: false,
+            reserved_by: `none`
         });
     }
     movies.push({ title: title, img: img, all_seats});
@@ -95,7 +108,7 @@ export function display_movies(div){
         <h6>Available seats: ${avi_seats.length} / ${mov.all_seats.length}</h6>`
         movie.onclick = () => {
             if(del === false){
-                create_local_storage(`selected_movie`, mov)
+                create_local_storage(`selected_movie`, index)
                 window.location.href = 'single_movie.html';
             }
         }
@@ -117,7 +130,10 @@ export function display_movies(div){
     });
 }
 export function display_single_movie(movie_cover, movie_seats){
-    let sel_movie = get_local_storage(`selected_movie`)
+    let sel_movies = get_local_storage('movies') || [];
+    let sel_movie = sel_movies[ get_local_storage(`selected_movie`)]
+    let to_reserve = [];
+    let to_un = [];
     if(sel_movie){
         const movie_img = document.createElement('div');
         movie_img.classList.add('movie_cover');
@@ -129,16 +145,77 @@ export function display_single_movie(movie_cover, movie_seats){
         movie_title.textContent = `${sel_movie.title}`
         movie_seats.appendChild(movie_title)
 
+        const seat_example = document.createElement('div');
+        seat_example.classList.add('seat_example');
+        for (let i = 0; i < 4; i++) {
+            const box = document.createElement('div');
+            box.classList.add('movie_seat');
+            if(i === 0){
+                const text = document.createElement('span');
+                text.textContent = `Empty`
+                seat_example.appendChild(text)
+            }
+            if(i === 1){
+                const text = document.createElement('span');
+                text.textContent = `Selected`
+                seat_example.appendChild(text)
+                box.style.backgroundColor = `green`
+            }
+            if(i === 2){
+                const text = document.createElement('span');
+                text.textContent = `Reserved`
+                seat_example.appendChild(text)
+                box.style.backgroundColor = `red`
+            }
+            if(i === 3){
+                const text = document.createElement('span');
+                text.textContent = `Reserved by you`
+                seat_example.appendChild(text)
+                box.style.backgroundColor = `grey`
+            }
+            seat_example.appendChild(box)
+        }
+        if(logged_in() === `admin`){
+            const box = document.createElement('div');
+            box.classList.add('movie_seat');
+            const text = document.createElement('span');
+            text.textContent = `Selected cancel`
+            seat_example.appendChild(text)
+            box.style.backgroundColor = `black`
+            seat_example.appendChild(box)
+        }
+        movie_seats.appendChild(seat_example)
+
         const movie_all_seats = document.createElement('div');
         movie_all_seats.classList.add('movie_all_seats');
-        sel_movie.all_seats.forEach((mov) => {
+        sel_movie.all_seats.forEach((mov, index) => {
+            let color
             const movie_seat = document.createElement('div');
             movie_seat.classList.add('movie_seat');
             movie_seat.textContent = `${mov.seat_nr}`
             if(mov.reserved) movie_seat.style.backgroundColor = `red`
+            if(mov.reserved && mov.reserved_by === logged_in()) movie_seat.style.backgroundColor = `grey`
             movie_seat.onclick = () => {
-                if(!mov.reserved){
-                    movie_seat.style.backgroundColor = `green`
+                if(to_reserve.includes(index)){
+                    to_reserve = to_reserve.filter(item => item !== index);
+                    movie_seat.style.backgroundColor = `transparent`
+                }
+                else {
+                    if(!mov.reserved){
+                        to_reserve.push(index)
+                        movie_seat.style.backgroundColor = `green`
+                    }
+                }
+                if(to_un.includes(index)){
+                    to_un = to_un.filter(item => item !== index);
+                    movie_seat.style.backgroundColor = color
+                }
+                else {
+                    if(mov.reserved && logged_in() === `admin`){
+                        to_un.push(index)
+                        color = movie_seat.style.backgroundColor
+                        movie_seat.style.backgroundColor = `black`
+                    }
                 }
             }
             movie_all_seats.appendChild(movie_seat);
@@ -148,13 +225,38 @@ export function display_single_movie(movie_cover, movie_seats){
         const reserve = document.createElement('button');
         reserve.classList.add('btn', `btn-success`, `m-4`);
         reserve.textContent = `Reserve`
+        reserve.onclick = () => {
+            if(to_reserve.length === 0){
+                return  alert(`You have not selected what to reserve`)
+            }
+            to_reserve.forEach(num =>{
+                sel_movie.all_seats[num].reserved = true;
+                sel_movie.all_seats[num].reserved_by = logged_in()
+                create_local_storage(`movies`, sel_movies)
+            });
+            alert(`Seats reserved`)
+            location.reload();
+        }
         movie_seats.appendChild(reserve)
 
         if(logged_in() === `admin`){
             const un_reserve = document.createElement('button');
             un_reserve.classList.add('btn', `btn-danger`, `m-4`);
             un_reserve.textContent = `Cancel Reservations`
+            un_reserve.onclick = () => {
+                if(to_un.length === 0){
+                    return  alert(`You have not selected what to cancel`)
+                }
+                to_un.forEach(num =>{
+                    sel_movie.all_seats[num].reserved = false;
+                    sel_movie.all_seats[num].reserved_by = `none`
+                    create_local_storage(`movies`, sel_movies)
+                });
+                alert(`Seats reservation canceled`)
+                location.reload();
+            }
             movie_seats.appendChild(un_reserve)
         }
+
     }
 }
